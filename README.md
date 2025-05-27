@@ -87,7 +87,7 @@ A Django REST Framework-based application for managing a library. Users can regi
   - Supports ordering: `?ordering=title`  
 
 - `POST /api/loans/` – Borrow a book
-- `POST /api/return/<book_id>/` – Return a book
+- `POST /api/return/<loan_id>/` – Return a book
 - `GET /swagger/` – Swagger UI
 - `GET /redoc/` – ReDoc documentation
 
