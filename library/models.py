@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from typing import Optional
@@ -48,7 +49,7 @@ class Book(models.Model):
         Returns:
             str: Title of the book.
         """
-        return self.title
+        return f"{self.title} by {self.author}"
 
 
 class Loan(models.Model):
@@ -75,3 +76,10 @@ class Loan(models.Model):
             bool: True if the book has been returned, False otherwise.
         """
         return self.returned_at is not None
+
+    def __str__(self) -> str:
+        return f"Loan of '{self.book.title}' by {self.user.username}"
+
+    def clean(self):
+        if not self.book.available:
+            raise ValidationError("Cannot loan a book that is not available.")
