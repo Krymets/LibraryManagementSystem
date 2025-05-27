@@ -91,6 +91,13 @@ A Django REST Framework-based application for managing a library. Users can regi
 - `GET /swagger/` – Swagger UI
 - `GET /redoc/` – ReDoc documentation
 
+## Creating an Administrator
+1. To create an administrator with full access, run the following command:
+    ```bash
+    python manage.py createadmin
+2. This will create a user with the username admin and password password123 (if it doesn’t already exist).
+3. Important: Make sure to change the admin password after the first login!
+
 ## 🧪 Tests
 ### Includes:
 1. ✅ Unit tests for models and serializers

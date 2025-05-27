@@ -12,6 +12,15 @@ class User(AbstractUser):
         is_admin (bool): Indicates whether the user has administrator privileges.
     """
     is_admin: models.BooleanField = models.BooleanField(default=False)
+    
+    def save(self, *args, **kwargs):
+        if self.is_admin:
+            self.is_staff = True
+            self.is_superuser = True
+        else:
+            self.is_staff = False
+            self.is_superuser = False
+        super().save(*args, **kwargs)
 
 
 class Book(models.Model):
