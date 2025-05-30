@@ -3,7 +3,8 @@ services:
     container_name: library
     build:
       context: .
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:80"
+#    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:80"
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && gunicorn library_system.wsgi:application --bind 0.0.0.0:80 --workers 3"
     networks:
       - library-network
     volumes:
