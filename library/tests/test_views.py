@@ -6,7 +6,7 @@ from library.models import User, Book
 def test_book_list_and_create():
     client = APIClient()
     # Create a test user and log in
-    user = User.objects.create_user(username="user1", password="pass")
+    user = User.objects.create_user(username="user1", password="pass", is_admin=True, is_staff=True)
     client.force_authenticate(user=user)
 
     # List of books (GET)

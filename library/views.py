@@ -29,6 +29,7 @@ class RegisterView(generics.CreateAPIView):
     API endpoint for user registration.
     """
     serializer_class = RegisterSerializer
+    permission_classes = [permissions.AllowAny]
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -42,6 +43,13 @@ class BookViewSet(viewsets.ModelViewSet):
     filterset_fields = ['author', 'available']
     search_fields = ['title', 'author', 'isbn']
     ordering_fields = ['title', 'page_count']
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        elif self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [permissions.IsAdminUser()]
+        return super().get_permissions()
 
     @swagger_auto_schema(operation_description=ROLE_DESCRIPTION)
     def list(self, request: Any, *args: Any, **kwargs: Any) -> Response:

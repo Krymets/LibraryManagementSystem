@@ -2,6 +2,7 @@ import pytest
 from library.models import Book, User, Loan
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from rest_framework.test import APIClient
 
 
 @pytest.mark.django_db
@@ -90,3 +91,41 @@ def test_loan_str_method():
     loan = Loan.objects.create(user=user, book=book, borrowed_at=timezone.now())
     expected_str = f"Loan of '{book.title}' by {user.username}"
     assert str(loan) == expected_str
+
+
+@pytest.mark.django_db
+def test_admin_can_delete_book():
+    book = Book.objects.create(title="Delete Me", author="Author", isbn="9999999999999", page_count=123)
+
+    admin_user = User.objects.create_user(username="admin", password="adminpass", is_staff=True, is_admin=True)
+
+    client = APIClient()
+    client.force_authenticate(user=admin_user)
+
+    response = client.delete(f"/api/books/{book.id}/")
+    assert response.status_code == 204
+    assert not Book.objects.filter(id=book.id).exists()
+
+
+@pytest.mark.django_db
+def test_anonymous_cannot_delete_book():
+    book = Book.objects.create(title="Protected Book", author="Author", isbn="8888888888888", page_count=100)
+
+    client = APIClient()
+    response = client.delete(f"/api/books/{book.id}/")
+
+    assert response.status_code in [401, 403]
+    assert Book.objects.filter(id=book.id).exists()
+
+
+@pytest.mark.django_db
+def test_non_admin_user_cannot_delete_book():
+    user = User.objects.create_user(username="notadmin", password="userpass", is_staff=False)
+    book = Book.objects.create(title="No Delete", author="Author", isbn="7777777777777", page_count=111)
+
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    response = client.delete(f"/api/books/{book.id}/")
+    assert response.status_code == 403
+    assert Book.objects.filter(id=book.id).exists()
